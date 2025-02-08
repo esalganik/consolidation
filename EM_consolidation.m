@@ -1,11 +1,12 @@
-%% Alli's Ridge data
+% Figure 1: Spatial variability of ridge consolidation
+% Alli's Ridge data
 close all; clear; clc;
 % Data from ice mass balance buoys (IMBs)
 load('T61.mat',"t_T61","T_T61"); % data, 2020T61, doi:10.1594/PANGAEA.926580
 load('PS_meteo.mat',"Ta_PS","t_PS","t_ASFS","Ta_ASFS_clean"); % data, meteo, doi:10.18739/A2FF3M18K
 load('DTC26.mat',"t_DTC26","T_DTC_all_new","z_DTC_new"); % data, DTC26, doi:10.1594/PANGAEA.951780
 z = 0:-0.02:-4.78; z = z + 0.8; z_T61 = z; % depth SIMBA T61
-c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; % colors
+c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
 t_hc =  [  1   9  50 100 140 150 175 200 225 250 275 290 300 310 315 325 330 340 350 375 400 425 450 475 525 550 689];
 hc_T = -[104 106 118 130 132 134 142 144 149 156 166 167 172 181 187 205 217 222 227 251 273 306 329 352 376 384 392]/100;
 hc_T_int = interp1(datenum(t_T61(t_hc)),hc_T,datenum(t_T61),'linear'); % consolidated layer depth, T61
@@ -202,41 +203,41 @@ sn2= [ 1.17  1.83  1.11  0.82  0.68  0.57  0.37  0.20  0.00]; sn0 =[ 0.21  0.14 
 
 % Figure 1
 figure
-tile = tiledlayout(2,3); tile.TileSpacing = 'compact'; tile.Padding = 'none';
+tile = tiledlayout(2+2,3); tile.TileSpacing = 'compact'; tile.Padding = 'none';
 nexttile([2 1]) % ridge morphology from drilling
 msz = 2.5; L1 = ([1 5 7 9]);
-p = plot(x1,s1,'b-.','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz; hold on
-p = plot(x1,k1,'b--','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
-p = plot(x1(L1),c1(L1),'bo-','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
-p = plot(x2,c2,'ro-','color',c{2},'MarkerFaceColor','w'); p.MarkerSize = msz; 
-p = plot(x1(L1),k1(L1),'bo--','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
-p = plot(x2,k2,'ro--','color',c{2},'MarkerFaceColor','w'); p.MarkerSize = msz; 
-p = plot(x1(L1),s1(L1),'bo-.','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz; 
-p = plot(x2,s2,'ro-.','color',c{2},'MarkerFaceColor','w'); p.MarkerSize = msz;
-p = plot(x0,s0,'bo-.','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
-p = plot(x0,k0,'bo--','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
-p = plot(x0,c0,'bo-','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
-p = fill([[x1 x0] fliplr([x1 x0])],[[c1 c0]*0 fliplr([c1 c0])],'b','facecolor',c{5},'edgecolor','none'); set(p,'facealpha',.1); % shaded initial cons.
-p = fill([x1 fliplr(x2)],[c1 fliplr(c2)],'b','facecolor',c{1},'edgecolor','none'); set(p,'facealpha',.1); % shaded cons.
-p = fill([x1 fliplr(x2)],[k1 fliplr(k2)],'r','facecolor',c{2},'edgecolor','none'); set(p,'facealpha',.1); % shaded melt
-p = text(7.5,1.7-0.5,'T61'); set(p,'Color',c{3},'HorizontalAlignment','center','FontSize',8);
-p = text(17.5,1.7-0.9,'DTC26'); set(p,'Color',c{4},'HorizontalAlignment','center','FontSize',8);
-p = text(-2.0,-0.4,'Consolidation'); set(p,'Color',c{5},'HorizontalAlignment','left','FontSize',8);
-p = text(-2.0,-1.0,'Jan-Feb'); set(p,'Color',c{5},'HorizontalAlignment','left','FontSize',8);
-p = text(11.0,-2.7,'Consolidation'); set(p,'Color',c{1},'HorizontalAlignment','center','FontSize',8);
-p = text(11.0,-3.3,'Feb-Jul'); set(p,'Color',c{1},'HorizontalAlignment','center','FontSize',8);
-p = text(8.8,-5.95,'Melt'); set(p,'Color',c{2},'HorizontalAlignment','center','FontSize',8);
+p = plot(x1,-s1,'b-.','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz; hold on
+p = plot(x1,-k1,'b--','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
+p = plot(x1(L1),-c1(L1),'bo-','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
+p = plot(x2,-c2,'ro-','color',c{2},'MarkerFaceColor','w'); p.MarkerSize = msz; 
+p = plot(x1(L1),-k1(L1),'bo--','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
+p = plot(x2,-k2,'ro--','color',c{2},'MarkerFaceColor','w'); p.MarkerSize = msz; 
+p = plot(x1(L1),-s1(L1),'bo-.','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz; 
+p = plot(x2,-s2,'ro-.','color',c{2},'MarkerFaceColor','w'); p.MarkerSize = msz;
+p = plot(x0,-s0,'bo-.','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
+p = plot(x0,-k0,'bo--','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
+p = plot(x0,-c0,'bo-','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = msz;
+p = fill([[x1 x0] fliplr([x1 x0])],[[-c1 -c0]*0 fliplr([-c1 -c0])],'b','facecolor',c{5},'edgecolor','none'); set(p,'facealpha',.1); % shaded initial cons.
+p = fill([x1 fliplr(x2)],[-c1 fliplr(-c2)],'b','facecolor',c{1},'edgecolor','none'); set(p,'facealpha',.1); % shaded cons.
+p = fill([x1 fliplr(x2)],[-k1 fliplr(-k2)],'r','facecolor',c{2},'edgecolor','none'); set(p,'facealpha',.1); % shaded melt
+p = text(7.5,-1.7+0.5,'T61'); set(p,'Color',c{3},'HorizontalAlignment','center','FontSize',8);
+p = text(17.5,-1.7+0.9,'DTC26'); set(p,'Color',c{4},'HorizontalAlignment','center','FontSize',8);
+p = text(-2.0,0.4,'Consolidation'); set(p,'Color',c{5},'HorizontalAlignment','left','FontSize',8);
+p = text(-2.0,1.0,'Jan-Feb'); set(p,'Color',c{5},'HorizontalAlignment','left','FontSize',8);
+p = text(11.0,2.7,'Consolidation'); set(p,'Color',c{1},'HorizontalAlignment','center','FontSize',8);
+p = text(11.0,3.3,'Feb-Jul'); set(p,'Color',c{1},'HorizontalAlignment','center','FontSize',8);
+p = text(8.8,5.95,'Melt'); set(p,'Color',c{2},'HorizontalAlignment','center','FontSize',8);
 leg = legend('Sail, Jan-Feb','Sail, July','CL, Jan-Feb','CL, July','Keel, Jan-Feb','Keel, July','box','off','NumColumns',2);set(leg,'FontSize',6,'Location','south');
-xlim([-5 25]); ylim([-10 2]); leg.ItemTokenSize = [30*0.72,18*0.72];
-hXLabel = xlabel('x (m)'); hYLabel = ylabel('Ice draft (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal');
+xlim([-5 25]); ylim([-2 10]); leg.ItemTokenSize = [30*0.72,18*0.72];
+hXLabel = xlabel('x (m)'); hYLabel = ylabel('Ice draft (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
 clearvars x1 k1 c1 s1 sn1 x2 k2 c2 s2 sn2 x0 k0 c0 s0 sn0 L1 msz
 
 nexttile % Temperatures
-plot(t_T66(270:1097),movmean(Ta_T66(270:1097),20),'color',c{1}); hold on % air temperature
+plot(t_T66(270:1097),movmean(Tw_mss(270:1097),20),'color',c{5}); hold on  % water temperature
 plot(t_DTC26(4:end),movmean(T_si_DTC(4:end),20),'color',c{2}); % snow-ice temperature
-plot(t_T66(270:1097),movmean(Tw_mss(270:1097),20),'color',c{5}); % water temperature
-leg = legend('Air','Snow-ice, DTC26','Water','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.2,18*0.2];
-hYLabel = ylabel('Temperature (°C)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
+plot(t_T66(270:1097),movmean(Ta_T66(270:1097),20),'color',c{1}); hold on % air temperature
+leg = legend('Water','Snow-ice, DTC26','Air','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.2,18*0.2];
+hYLabel = ylabel('Temperature (°C)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); ylim([-40 10]); yticks(-40:10:10);
 ax = gca; ax.XTick = datetime(['01-Jan-2020';'01-Feb-2020';'01-Mar-2020';'01-Apr-2020';'01-May-2020';'01-Jun-2020';'01-Jul-2020';'01-Aug-2020']); datetick('x','mmm','keepticks'); xtickangle(0); % time
 
 nexttile([2 1]) % Consolidation: model and observations
@@ -249,15 +250,545 @@ hYLabel = ylabel('Ice draft (m)'); set([hYLabel gca],'FontSize',8,'FontWeight','
 ax = gca; ax.XTick = datetime(['01-Jan-2020';'01-Feb-2020';'01-Mar-2020';'01-Apr-2020';'01-May-2020';'01-Jun-2020';'01-Jul-2020';'01-Aug-2020']); datetick('x','mmm','keepticks'); xtickangle(0); % time
 
 nexttile % Snow thickness
-p = plot(t_MP,h_sn_MP_T61,'o--','color',c{3}); p.MarkerSize = 2.0; set(p,'markerfacecolor',get(p,'color')); hold on % snow depth from MP, T61 site
-p = plot(t_MP,h_sn_MP_DTC,'o','color',c{4}); p.MarkerSize = 2.0; set(p,'markerfacecolor',get(p,'color')); % snow depth from MP, DTC site
+p = plot(t_MP,h_sn_MP_T61,'o--','color',c{3}); p.MarkerSize = 2.3; set(p,'markerfacecolor',get(p,'color')); hold on % snow depth from MP, T61 site
+p = plot(t_MP,h_sn_MP_DTC,'o','color',c{4}); p.MarkerSize = 2.3; set(p,'markerfacecolor',get(p,'color')); % snow depth from MP, DTC site
 plot(t_T66,h_sn,'color',c{4}); % snow depth from DTC
 leg = legend('T61, Magnaprobe','DTC26, Magnaprobe','DTC26, temperature','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.6,18*0.6];
 hYLabel = ylabel('Snow thickness (m)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); ylim([0 2]); 
 ax = gca; ax.XTick = datetime(['01-Jan-2020';'01-Feb-2020';'01-Mar-2020';'01-Apr-2020';'01-May-2020';'01-Jun-2020';'01-Jul-2020';'01-Aug-2020']); datetick('x','mmm','keepticks'); xtickangle(0); % time
-clearvars leg hXLabel hYLabel tile p ax c
+clearvars leg hXLabel hYLabel tile p ax
 
-annotation('textbox',[0.005 .51 0.01 .51],'String','(a)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
-annotation('textbox',[0.220 .51 0.22 .51],'String','(b)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
-annotation('textbox',[0.440 .51 0.45 .51],'String','(c)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
-annotation('textbox',[0.220 .28 0.22 .28],'String','(d)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+nexttile([2 1]) % ridge morphology from drilling, Fort Ridge
+x = [+12     +17   +19   +22   +27   +30];
+k = [-0.74 -5.73 -6.78 -5.60 -3.91 -3.86];
+cl = [-0.74 -1.33 -2.23 -1.00 -1.01 -1.06];
+% cl_T = [NaN -1.6 NaN -4.0 -2.5 NaN];
+cl_T = [NaN -1.33-0.62 NaN -1.0-3.03 -1.01-1.07 NaN]; % consolidation from IMBs
+s = [0.09   0.32  0.32  0.50  0.19  0.19];
+sn =[0.09   0.82  0.47  0.60  1.00  0.78];
+p = plot(x,-s,'o-.','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = 2.5; hold on
+p = plot(x,-cl,'o-','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = 2.5;
+p = plot(x(~isnan(cl_T)),-cl_T(~isnan(cl_T)),'o-','color',c{2},'MarkerFaceColor','w'); p.MarkerSize = 2.5;
+p = plot(x,-k,'o--','color',c{1},'MarkerFaceColor','w'); p.MarkerSize = 2.5;
+p = fill([x fliplr(x)],[-cl*0 fliplr(-cl)],'b','facecolor',c{5},'edgecolor','none'); set(p,'facealpha',.1); % shaded initial cons.
+p = fill([x(2:5) fliplr(x(~isnan(cl_T)))],[-cl(2:5) fliplr(-cl_T(~isnan(cl_T)))],'b','facecolor',c{1},'edgecolor','none'); set(p,'facealpha',.1); % shaded cons.
+p = text(12.5,0.3,'Consolidation, Oct-Jan'); set(p,'Color',c{5},'HorizontalAlignment','left','FontSize',8);
+p = text(21.2,1.5,'Consolidation'); set(p,'Color',c{1},'HorizontalAlignment','left','FontSize',8);
+p = text(21.2,2.1,'Jan-Apr'); set(p,'Color',c{1},'HorizontalAlignment','left','FontSize',8);
+p = text(17,-1.4,'DTC'); set(p,'Color',c{3},'HorizontalAlignment','center','FontSize',8);
+p = text(17,-0.8,'25'); set(p,'Color',c{3},'HorizontalAlignment','center','FontSize',8);
+p = text(22,-1.4,'T60'); set(p,'Color',c{4},'HorizontalAlignment','center','FontSize',8);
+p = text(27,-1.4,'DTC'); set(p,'Color',c{6},'HorizontalAlignment','center','FontSize',8);
+p = text(27,-0.8,'24'); set(p,'Color',c{6},'HorizontalAlignment','center','FontSize',8);
+leg = legend('Sail, Jan','CL, Jan','CL, Mar-Apr','Keel, Jan','box','off','NumColumns',2);set(leg,'FontSize',6,'Location','south');
+ylim([-2 10]); leg.ItemTokenSize = [30*0.72,18*0.72]; % xlim([-5 25]); 
+hXLabel = xlabel('x (m)'); hYLabel = ylabel('Ice draft (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
+
+nexttile % temperatures, Fort Ridge
+plot(t_T66(1:1097),movmean(Tw_mss(1:1097),20),'color',c{5}); hold on  % water temperature
+plot(t_T66(1:1097),movmean(Ta_T66(1:1097),20),'color',c{1}); hold on % air temperature
+leg = legend('Water','Air','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.2,18*0.2];
+hYLabel = ylabel('Temperature (°C)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); ylim([-40 10]); yticks(-40:10:10);
+ax = gca; ax.XTick = datetime(['01-Oct-2019';'01-Nov-2019';'01-Dec-2019';'01-Jan-2020';'01-Feb-2020';'01-Mar-2020';'01-Apr-2020';'01-May-2020']); datetick('x','mmm','keepticks'); xtickangle(0); % time
+
+nexttile([2 1]); % consolidation
+load('DTC_data.mat',"t_DTC","fb_DTC","hs_DTC","hi_DTC");
+load('T60.mat',"t_T60");
+t_hc =  [  1   9  50 100 150 200 250 275 285 290 310 315 325 350 375 395 405 410 420];
+hc_T = -[147 147 177 200 214 233 256 280 319 323 354 374 412 429 448 450 450 450 450]/100;
+hc_T_int = interp1(datenum(t_T60(t_hc)),hc_T,datenum(t_T60),'linear');
+i = 12; plot(datetime(t_DTC{i},'ConvertFrom','datenum'),-hi_DTC{i},':','linewidth',3,'Color',c{3}); hold on % DTC 25
+plot(t_T60,-hc_T_int-0.5,':','linewidth',3,'Color',c{4}); % T60
+i = 11; plot(datetime(t_DTC{i},'ConvertFrom','datenum'),-hi_DTC{i},':','linewidth',3,'Color',c{6}); % DTC 24
+leg = legend('CL, obs., DTC25','CL, obs., T60','CL, obs., DTC24','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+hYLabel = ylabel('Ice draft (m)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
+ax = gca; ax.XTick = datetime(['01-Oct-2019';'01-Nov-2019';'01-Dec-2019';'01-Jan-2020';'01-Feb-2020';'01-Mar-2020';'01-Apr-2020';'01-May-2020']); datetick('x','mmm','keepticks'); xtickangle(0); % time
+ylim([0 4.5]); 
+
+nexttile % Snow thickness
+i = 12; plot(datetime(t_DTC{i},'ConvertFrom','datenum'),hs_DTC{i}-fb_DTC{i},'Color',c{3}); hold on % snow depth from DTC 25
+i = 11; plot(datetime(t_DTC{i},'ConvertFrom','datenum'),hs_DTC{i}-fb_DTC{i},'Color',c{6}); % snow depth from DTC 24
+leg = legend('DTC25','DTC24','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.6,18*0.6];
+hYLabel = ylabel('Snow thickness (m)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); ylim([0 2]); 
+ax = gca; ax.XTick = datetime(['01-Oct-2019';'01-Nov-2019';'01-Dec-2019';'01-Jan-2020';'01-Feb-2020';'01-Mar-2020';'01-Apr-2020';'01-May-2020']); datetick('x','mmm','keepticks'); xtickangle(0); % time
+clearvars leg hXLabel hYLabel tile p ax
+
+% annotation('textbox',[0.005 .51 0.01 .51],'String','(a)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+% annotation('textbox',[0.220 .51 0.22 .51],'String','(b)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+% annotation('textbox',[0.440 .51 0.45 .51],'String','(c)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+% annotation('textbox',[0.220 .28 0.22 .28],'String','(d)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.005 .50 0.01 .51],'String','(a)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.215 .50 0.22 .51],'String','(b)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.440 .50 0.45 .51],'String','(c)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.005 .25 0.01 .26],'String','(d)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.215 .25 0.22 .26],'String','(e)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.440 .25 0.45 .26],'String','(f)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
+
+%% Figure 2: Comparison of consolidated layer thickness evolution from EMI, model, and IMBs
+% Ridge EMI data from Polona, Alli's Ridge, transect A1
+clear; clc;
+load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
+load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
+t_sim = t_T66(270:1097); Tw_sim = Tw_mss(270:1097); Ta_sim = Ta_T66(270:1097);
+t_sim = t_sim(53:end); Tw_sim = Tw_sim(53:end); Ta_sim = Ta_sim(53:end); % only after first EM survey
+
+% import of EMI data
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA1_cc_consolidatedlayer.csv";
+T = readtable(project); A = table2array(T); x = A(1,2:end); cl = A(2:size(A,1),2:end); time = num2str(A(2:size(A,1),1)); t = datetime(time,'InputFormat','yyyyMMdd'); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA1_cc_freeboard.csv";
+T = readtable(project); A = table2array(T); fb = A(2,2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA1_cc_snow.csv";
+T = readtable(project); A = table2array(T); sn = A(2:size(A,1),2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA1_cc_totalthickness.csv";
+T = readtable(project); A = table2array(T); k = A(2:size(A,1),2:end); clearvars project T A
+
+for i = 1:length(x)
+    hs_int(:,i) = interp1([datenum(t_sim(1)); datenum(t); datenum(t_sim(end))],[0; sn(:,i); 0],datenum(t_sim),'linear');
+end
+
+% Alli's Ridge EMI transect, fresh ice model
+por = 0.29; % ridge macroporosity (from drilling)
+Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
+Hia = 21; % heat transfer coefficient (function of wind speed)
+hs = hs_int; % snow thickness
+ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
+ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
+% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
+td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
+% fresh ice model
+dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); dc_em = hs_int*0;
+for j = 1:length(x)
+    dc(1) = dc_0(j);
+    for i = 1:n-1
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
+        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        dc(i+1) = dc(i) + ddc(i);
+    end
+    % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
+    dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
+    dc_em(:,j) = dc(:);
+end
+
+c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
+for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
+
+figure
+tile = tiledlayout(1,5); tile.TileSpacing = 'compact'; tile.Padding = 'none';
+nexttile
+for i = 1:length(t)
+    di_em_avg(i) = mean(cl(i,:)-fb(1,:)); di_em_std(i) = std(cl(i,:));
+end
+for i = 1:length(t_sim)
+    di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+end
+p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
+p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
+plot(t_sim,di_mdl_avg,'color',c{1});
+
+% IMB data
+load('T61.mat',"t_T61"); load('DTC26.mat',"t_DTC26");
+t_hc =  [  1   9  50 100 140 150 175 200 225 250 275 290 300 310 315 325 330 340 350 375 400 425 450 475 525 550 689];
+hc_T = -[104 106 118 130 132 134 142 144 149 156 166 167 172 181 187 205 217 222 227 251 273 306 329 352 376 384 392]/100;
+hc_T_int = interp1(datenum(t_T61(t_hc)),hc_T,datenum(t_T61),'linear'); % consolidated layer depth, T61
+t_hc_DTC =  [  1  15  30  60 160 200 240 300 330 375 440 500 550 600 630 656];
+hc_DTC =   -[210 210 210 210 214 222 224 238 238 242 238 256 242 238 224 214]/100;
+hc_DTC_int = interp1(datenum(t_DTC26(t_hc_DTC)),hc_DTC,datenum(t_DTC26),'linear','extrap'); % consolidated layer depth, DTC
+plot(t_T61,-hc_T_int,'--','linewidth',0.5,'color',c{3}); % observations, T61
+plot(t_DTC26(4:end),-hc_DTC_int(4:end),'-','linewidth',0.5,'color',c{3}); % observations, DTC
+
+hYLabel = ylabel('Thickness of consolidated layer (m)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); ylim([1 5]);
+title('A1','FontSize',8,'FontWeight','normal');
+t_start = datetime('01-Jan-2020'); t_end = datetime('01-Aug-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
+% leg = legend('','EMI','','Model','IMB','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','southeast'); leg.ItemTokenSize = [30*0.66,18*0.66];
+
+% figure
+% tile = tiledlayout(2,3); tile.TileSpacing = 'compact'; tile.Padding = 'none';
+% nexttile
+% for i = 2:length(t)
+%     p = plot(cl(i,:)-cl(1,:),dc_em(t_em(i),:)-dc_em(t_em(1),:),'o','color',c{i}); p.MarkerSize = 3.0; set(p,'markerfacecolor',get(p,'color')); hold on
+% end
+% plot([0 max(cl(end,:)-cl(1,:))],[0 max(cl(end,:)-cl(1,:))],'k--');
+% leg = legend(datestr(t(2:end),'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% hXLabel = xlabel('EMI consolidation (m)'); hYLabel = ylabel('Model consolidation (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal');
+% title('A1','FontSize',8,'FontWeight','normal');
+
+% figure
+% for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
+% for i = 1:length(t)
+%     plot(x,dc_em(t_em(i),:),'color',c{i}); hold on
+% end
+% for i = 1:length(t)
+%     plot(x,cl(i,:)-fb,':','linewidth',3.5,'color',c{i});
+% end
+% plot(x,mean(k(1,:),1)-fb,'-.','linewidth',1,'color','k');
+% plot(x,-mean(sn,1)-fb,'--','linewidth',1,'color','k');
+% leg = legend(datestr(t,'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% title('Allis Ridge Central Transect (A1)','FontSize',8,'FontWeight','normal');
+% hXLabel = xlabel('x (m)'); hYLabel = ylabel('Ice draft (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
+
+% Ridge EMI data from Polona, Alli's Ridge, transect A2
+clear; clc; 
+load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
+load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
+t_sim = t_T66(270:1097); Tw_sim = Tw_mss(270:1097); Ta_sim = Ta_T66(270:1097);
+t_sim = t_sim(155:end); Tw_sim = Tw_sim(155:end); Ta_sim = Ta_sim(155:end); % only after first EM survey
+
+% import of EMI data
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA2_cc_consolidatedlayer.csv";
+T = readtable(project); A = table2array(T); x = A(1,2:end); cl = A(2:size(A,1),2:end); time = num2str(A(2:size(A,1),1)); t = datetime(time,'InputFormat','yyyyMMdd'); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA2_cc_freeboard.csv";
+T = readtable(project); A = table2array(T); fb = A(2,2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA2_cc_snow.csv";
+T = readtable(project); A = table2array(T); sn = A(2:size(A,1),2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA2_cc_totalthickness.csv";
+T = readtable(project); A = table2array(T); k = A(2:size(A,1),2:end); clearvars project T A
+
+for i = 1:length(x)
+    % hs_int(:,i) = interp1([datenum(t_sim(1)); datenum(t); datenum(t_sim(end))],[0; sn(:,i); 0],datenum(t_sim),'linear');
+    hs_int(:,i) = interp1([datenum(t); datenum(t_sim(end))],[sn(:,i); 0],datenum(t_sim),'linear');
+end
+
+% Alli's Ridge EMI transect, fresh ice model
+por = 0.29; % ridge macroporosity (from drilling)
+Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
+Hia = 21; % heat transfer coefficient (function of wind speed)
+hs = hs_int; % snow thickness
+ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
+ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
+% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
+td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
+% fresh ice model
+dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); dc_em = hs_int*0;
+for j = 1:length(x)
+    dc(1) = dc_0(j);
+    for i = 1:n-1
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
+        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        dc(i+1) = dc(i) + ddc(i);
+    end
+    % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
+    dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
+    dc_em(:,j) = dc(:);
+end
+for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
+c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
+
+% figure
+% for i = 1:length(t)
+%     plot(x,dc_em(t_em(i),:),'color',c{i}); hold on
+% end
+% for i = 1:length(t)
+%     plot(x,cl(i,:)-fb,':','linewidth',3.5,'color',c{i});
+% end
+% plot(x,mean(k(1,:),1)-fb,'-.','linewidth',1,'color','k');
+% plot(x,-mean(sn,1)-fb,'--','linewidth',1,'color','k');
+% leg = legend(datestr(t,'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% title('Allis Ridge Central Transect (A2)','FontSize',8,'FontWeight','normal');
+% hXLabel = xlabel('x (m)'); hYLabel = ylabel('Ice draft (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
+
+% nexttile
+% for i = 2:length(t)
+%     p = plot(cl(i,:)-cl(1,:),dc_em(t_em(i),:)-dc_em(t_em(1),:),'o','color',c{i}); p.MarkerSize = 3.0; set(p,'markerfacecolor',get(p,'color')); hold on
+% end
+% plot([0 max(cl(end,:)-cl(1,:))],[0 max(cl(end,:)-cl(1,:))],'k--');
+% leg = legend(datestr(t(2:end),'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% hXLabel = xlabel('EMI consolidation (m)'); hYLabel = ylabel('Model consolidation (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal');
+% title('A2','FontSize',8,'FontWeight','normal');
+
+nexttile
+for i = 1:length(t)
+    di_em_avg(i) = mean(cl(i,:)-fb(1,:)); di_em_std(i) = std(cl(i,:));
+end
+for i = 1:length(t_sim)
+    di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+end
+p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
+p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
+plot(t_sim,di_mdl_avg,'color',c{1});
+set(gca,'FontSize',8,'FontWeight','normal'); ylim([1 5]);
+title('A2','FontSize',8,'FontWeight','normal');
+t_start = datetime('01-Jan-2020'); t_end = datetime('01-Aug-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
+% leg = legend('','EMI','','Model','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','northeast'); leg.ItemTokenSize = [30*0.66,18*0.66];
+
+% Ridge EMI data from Polona, Alli's Ridge, transect A3
+clear; clc;
+load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
+load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
+t_sim = t_T66(270:1097); Tw_sim = Tw_mss(270:1097); Ta_sim = Ta_T66(270:1097);
+t_sim = t_sim(155:end); Tw_sim = Tw_sim(155:end); Ta_sim = Ta_sim(155:end); % only after first EM survey
+
+% import of EMI data
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA3_cc_consolidatedlayer.csv";
+T = readtable(project); A = table2array(T); x = A(1,2:end); cl = A(2:size(A,1),2:end); time = num2str(A(2:size(A,1),1)); t = datetime(time,'InputFormat','yyyyMMdd'); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA3_cc_freeboard.csv";
+T = readtable(project); A = table2array(T); fb = A(2,2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA3_cc_snow.csv";
+T = readtable(project); A = table2array(T); sn = A(2:size(A,1),2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA3_cc_totalthickness.csv";
+T = readtable(project); A = table2array(T); k = A(2:size(A,1),2:end); clearvars project T A
+
+for i = 1:length(x)
+    % hs_int(:,i) = interp1([datenum(t_sim(1)); datenum(t); datenum(t_sim(end))],[0; sn(:,i); 0],datenum(t_sim),'linear');
+    hs_int(:,i) = interp1([datenum(t); datenum(t_sim(end))],[sn(:,i); 0],datenum(t_sim),'linear');
+end
+
+% Alli's Ridge EMI transect, fresh ice model
+por = 0.29; % ridge macroporosity (from drilling)
+Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
+Hia = 21; % heat transfer coefficient (function of wind speed)
+hs = hs_int; % snow thickness
+ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
+ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
+% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
+td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
+% fresh ice model
+dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); dc_em = hs_int*0;
+for j = 1:length(x)
+    dc(1) = dc_0(j);
+    for i = 1:n-1
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
+        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        dc(i+1) = dc(i) + ddc(i);
+    end
+    % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
+    dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
+    dc_em(:,j) = dc(:);
+end
+c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
+for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
+
+nexttile
+for i = 1:length(t)
+    di_em_avg(i) = mean(cl(i,:)-fb(1,:)); di_em_std(i) = std(cl(i,:));
+end
+for i = 1:length(t_sim)
+    di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+end
+p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
+p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
+plot(t_sim,di_mdl_avg,'color',c{1});
+plot(t_sim(1),di_mdl_avg(1)*0,'--','color',c{3});
+set(gca,'FontSize',8,'FontWeight','normal'); ylim([1 5]);
+title('A3','FontSize',8,'FontWeight','normal');
+t_start = datetime('01-Jan-2020'); t_end = datetime('01-Aug-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
+% leg = legend('','EMI','','Model','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','northeast'); leg.ItemTokenSize = [30*0.66,18*0.66];
+leg = legend('','EMI','','Model','IMB','box','off','NumColumns',3); set(leg,'FontSize',7,'Location','southoutside'); leg.ItemTokenSize = [30*0.66,18*0.66];
+
+% nexttile
+% for i = 2:length(t)
+%     p = plot(cl(i,:)-cl(1,:),dc_em(t_em(i),:)-dc_em(t_em(1),:),'o','color',c{i}); p.MarkerSize = 3.0; set(p,'markerfacecolor',get(p,'color')); hold on
+% end
+% plot([0 max(cl(end,:)-cl(1,:))],[0 max(cl(end,:)-cl(1,:))],'k--');
+% leg = legend(datestr(t(2:end),'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% hXLabel = xlabel('EMI consolidation (m)'); hYLabel = ylabel('Model consolidation (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal');
+% title('A3','FontSize',8,'FontWeight','normal');
+
+% figure
+% c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
+% for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
+% for i = 1:length(t)
+%     plot(x,dc_em(t_em(i),:),'color',c{i}); hold on
+% end
+% for i = 1:length(t)
+%     plot(x,cl(i,:)-fb,':','linewidth',3.5,'color',c{i});
+% end
+% plot(x,mean(k(1,:),1)-fb,'-.','linewidth',1,'color','k');
+% plot(x,-mean(sn,1)-fb,'--','linewidth',1,'color','k');
+% leg = legend(datestr(t,'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% title('Allis Ridge Central Transect (A2)','FontSize',8,'FontWeight','normal');
+% hXLabel = xlabel('x (m)'); hYLabel = ylabel('Ice draft (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
+
+% Ridge EMI data from Polona, Fort Ridge, transect 1
+clear; clc;
+load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
+load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
+t_sim = t_T66(286:1097); Tw_sim = Tw_mss(286:1097); Ta_sim = Ta_T66(286:1097); % only after first EM survey
+
+% import of EMI data
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR1_cc_consolidatedlayer.csv";
+T = readtable(project); A = table2array(T); x = A(1,2:end); cl = A(2:size(A,1),2:end); time = num2str(A(2:size(A,1),1)); t = datetime(time,'InputFormat','yyyyMMdd'); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR1_cc_freeboard.csv";
+T = readtable(project); A = table2array(T); fb = A(2,2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR1_cc_snow.csv";
+T = readtable(project); A = table2array(T); sn = A(2:size(A,1),2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR1_cc_totalthickness.csv";
+T = readtable(project); A = table2array(T); k = A(2:size(A,1),2:end); clearvars project T A
+
+for i = 1:length(x)
+    hs_int(:,i) = interp1([datenum(t); datenum(t_sim(end))],[sn(:,i); 0],datenum(t_sim),'linear');
+end
+
+% Fort Ridge EMI transect, fresh ice model
+por = 0.295; % ridge macroporosity (from drilling)
+Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
+Hia = 21; % heat transfer coefficient (function of wind speed)
+hs = hs_int; % snow thickness
+ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
+ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
+% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
+td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
+% fresh ice model
+dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); dc_em = hs_int*0;
+for j = 1:length(x)
+    dc(1) = dc_0(j);
+    for i = 1:n-1
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
+        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        dc(i+1) = dc(i) + ddc(i);
+    end
+    % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
+    dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
+    dc_em(:,j) = dc(:);
+end
+for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
+c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
+
+nexttile
+for i = 1:length(t)
+    di_em_avg(i) = mean(cl(i,:)-fb(1,:)); di_em_std(i) = std(cl(i,:));
+end
+for i = 1:length(t_sim)
+    di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+end
+p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
+p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
+plot(t_sim,di_mdl_avg,'color',c{1});
+
+load('DTC_data.mat',"t_DTC","fb_DTC","hs_DTC","hi_DTC"); load('T60.mat',"t_T60");
+t_hc =  [  1   9  50 100 150 200 250 275 285 290 310 315 325 350 375 395 405 410 420];
+hc_T = -[147 147 177 200 214 233 256 280 319 323 354 374 412 429 448 450 450 450 450]/100;
+hc_T_int = interp1(datenum(t_T60(t_hc)),hc_T,datenum(t_T60),'linear');
+i = 12; plot(datetime(t_DTC{i},'ConvertFrom','datenum'),-hi_DTC{i},'-','linewidth',0.5,'Color',c{3}); hold on % DTC 25
+plot(t_T60,-hc_T_int-0.5,'-.','linewidth',0.5,'Color',c{3}); % T60
+i = 11; plot(datetime(t_DTC{i},'ConvertFrom','datenum'),-hi_DTC{i},'--','linewidth',0.5,'Color',c{3}); % DTC 24
+
+set(gca,'FontSize',8,'FontWeight','normal'); ylim([0.5 4.0]);
+title('FR1','FontSize',8,'FontWeight','normal');
+t_start = datetime('01-Jan-2020'); t_end = datetime('01-Apr-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
+% leg = legend('','EMI','','Model','IMB','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','southwest'); leg.ItemTokenSize = [30*0.66,18*0.66];
+
+% nexttile
+% for i = 2:length(t)
+%     p = plot(cl(i,:)-cl(1,:),dc_em(t_em(i),:)-dc_em(t_em(1),:),'o','color',c{i}); p.MarkerSize = 3.0; set(p,'markerfacecolor',get(p,'color')); hold on
+% end
+% plot([0 max(cl(end,:)-cl(1,:))],[0 max(cl(end,:)-cl(1,:))],'k--');
+% leg = legend(datestr(t(2:end),'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','northwest'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% hXLabel = xlabel('EMI consolidation (m)'); hYLabel = ylabel('Model consolidation (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal');
+% title('FR1','FontSize',8,'FontWeight','normal');
+
+% figure
+% for i = 1:length(t)
+%     plot(x,dc_em(t_em(i),:),'color',c{i}); hold on
+% end
+% for i = 1:length(t)
+%     plot(x,cl(i,:)-fb,':','linewidth',3.5,'color',c{i});
+% end
+% plot(x,mean(k(1:length(t),:),1)-fb,'-.','linewidth',1,'color','k');
+% plot(x,-mean(sn,1)-fb,'--','linewidth',1,'color','k');
+% leg = legend(datestr(t,'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% title('Allis Ridge Central Transect (A2)','FontSize',8,'FontWeight','normal');
+% hXLabel = xlabel('x (m)'); hYLabel = ylabel('Ice draft (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
+
+% Ridge EMI data from Polona, Fort Ridge, transect 2
+clear; clc;
+load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
+load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
+t_sim = t_T66(294:1097); Tw_sim = Tw_mss(294:1097); Ta_sim = Ta_T66(294:1097); % only after first EM survey
+
+% import of EMI data
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR2_cc_consolidatedlayer.csv";
+T = readtable(project); A = table2array(T); x = A(1,2:end); cl = A(2:size(A,1),2:end); time = num2str(A(2:size(A,1),1)); t = datetime(time,'InputFormat','yyyyMMdd'); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR2_cc_freeboard.csv";
+T = readtable(project); A = table2array(T); fb = A(2,2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR2_cc_snow.csv";
+T = readtable(project); A = table2array(T); sn = A(2:size(A,1),2:end); clearvars project T A
+project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR2_cc_totalthickness.csv";
+T = readtable(project); A = table2array(T); k = A(2:size(A,1),2:end); clearvars project T A
+
+for i = 1:length(x)
+    hs_int(:,i) = interp1([datenum(t); datenum(t_sim(end))],[sn(:,i); 0],datenum(t_sim),'linear');
+end
+
+% Fort Ridge EMI transect, fresh ice model
+por = 0.295; % ridge macroporosity (from drilling)
+Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
+Hia = 21; % heat transfer coefficient (function of wind speed)
+hs = hs_int; % snow thickness
+ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
+ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
+% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
+td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
+% fresh ice model
+dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); dc_em = hs_int*0;
+for j = 1:length(x)
+    dc(1) = dc_0(j);
+    for i = 1:n-1
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
+        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        dc(i+1) = dc(i) + ddc(i);
+    end
+    % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
+    dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
+    dc_em(:,j) = dc(:);
+end
+for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
+c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
+
+nexttile
+for i = 1:length(t)
+    di_em_avg(i) = mean(cl(i,:)-fb(1,:)); di_em_std(i) = std(cl(i,:));
+end
+for i = 1:length(t_sim)
+    di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+end
+p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
+p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
+plot(t_sim,di_mdl_avg,'color',c{1});
+set(gca,'FontSize',8,'FontWeight','normal'); ylim([0.5 4.0]);
+title('FR2','FontSize',8,'FontWeight','normal');
+t_start = datetime('01-Jan-2020'); t_end = datetime('01-Apr-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
+% leg = legend('','EMI','','Model','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','southeast'); leg.ItemTokenSize = [30*0.66,18*0.66];
+
+annotation('textbox',[0.005 .51 0.01 .51],'String','(a)','FontSize',7,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.14  .51 0.15 .51],'String','(b)','FontSize',7,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.27  .51 0.28 .51],'String','(c)','FontSize',7,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.40  .51 0.41 .51],'String','(d)','FontSize',7,'EdgeColor','none','HorizontalAlignment','center');
+annotation('textbox',[0.535 .51 0.54 .51],'String','(e)','FontSize',7,'EdgeColor','none','HorizontalAlignment','center');
+
+% nexttile
+% for i = 2:length(t)
+%     p = plot(cl(i,:)-cl(1,:),dc_em(t_em(i),:)-dc_em(t_em(1),:),'o','color',c{i}); p.MarkerSize = 3.0; set(p,'markerfacecolor',get(p,'color')); hold on
+% end
+% plot([0 max(cl(end,:)-cl(1,:))],[0 max(cl(end,:)-cl(1,:))],'k--');
+% leg = legend(datestr(t(2:end),'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% hXLabel = xlabel('EMI consolidation (m)'); hYLabel = ylabel('Model consolidation (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal');
+% title('FR2','FontSize',8,'FontWeight','normal');
+
+% figure
+% c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
+% for i = 1:length(t)
+%     plot(x,dc_em(t_em(i),:),'color',c{i}); hold on
+% end
+% for i = 1:length(t)
+%     plot(x,cl(i,:)-fb,':','linewidth',3.5,'color',c{i});
+% end
+% plot(x,mean(k(1:3,:),1)-fb,'-.','linewidth',1,'color','k');
+% plot(x,-mean(sn,1)-fb,'--','linewidth',1,'color','k');
+% leg = legend(datestr(t,'dd mmm'),'box','off','NumColumns',1); set(leg,'FontSize',7,'Location','best'); leg.ItemTokenSize = [30*0.5,18*0.5];
+% title('Allis Ridge Central Transect (A2)','FontSize',8,'FontWeight','normal');
+% hXLabel = xlabel('x (m)'); hYLabel = ylabel('Ice draft (m)'); set([hXLabel hYLabel gca],'FontSize',8,'FontWeight','normal'); set(gca,'YDir','reverse');
