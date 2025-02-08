@@ -1,4 +1,4 @@
-Itkin et al. [2024] Towards detection of pressure ridge thickness, consolidation, and melt by electromagnetic induction
+Itkin et al. [2025] Towards detection of pressure ridge thickness, consolidation, and melt by electromagnetic induction
 
 MATLAB codes are provided to model the temporal evolution of the consolidated layer of Alli's Ridge (doi:10.1525/elementa.2023.00008) and Fort Ridge within MOSAiC Central Observatory (doi:10.1525/elementa.2021.000046).
 
