@@ -187,7 +187,7 @@ for i = 1:n-1
 end
 dc_2_si = dc_2_si - dc_0;
 dc_2_si = dc_2_si*333400./Lsi';
-clearvars ddc dc_0 Li ks rhoi por R1 R2 R3 Hia dt n i Ta Tsi ki Lsi t
+clearvars ddc dc_0 Li ks rhoi por R1 R2 R3 Hia dt n i Ta Tsi ki t
 
 % Ridge drilling data, doi:10.1594/PANGAEA.950192
 x1 = [ -2.5     0   2.5     5   7.5    10  12.5    15  17.5];
@@ -201,7 +201,7 @@ k2 = [-4.70 -3.00 -3.38 -5.80 -5.60 -5.40 -5.10 -4.90 -4.53]; c0 = [-2.05 -0.97 
 s2 = [ 0.80  1.75  1.06  0.80  0.65  0.53  0.35  0.15  0.00]; s0 = [ 0.20  0.13  0.09];
 sn2= [ 1.17  1.83  1.11  0.82  0.68  0.57  0.37  0.20  0.00]; sn0 =[ 0.21  0.14  0.16];
 
-% Figure 1
+% Figure 1, spatial variability of consolidation
 figure
 tile = tiledlayout(2+2,3); tile.TileSpacing = 'compact'; tile.Padding = 'none';
 nexttile([2 1]) % ridge morphology from drilling
@@ -313,10 +313,6 @@ hYLabel = ylabel('Snow thickness (m)'); set([hYLabel gca],'FontSize',8,'FontWeig
 ax = gca; ax.XTick = datetime(['01-Oct-2019';'01-Nov-2019';'01-Dec-2019';'01-Jan-2020';'01-Feb-2020';'01-Mar-2020';'01-Apr-2020';'01-May-2020']); datetick('x','mmm','keepticks'); xtickangle(0); % time
 clearvars leg hXLabel hYLabel tile p ax
 
-% annotation('textbox',[0.005 .51 0.01 .51],'String','(a)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
-% annotation('textbox',[0.220 .51 0.22 .51],'String','(b)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
-% annotation('textbox',[0.440 .51 0.45 .51],'String','(c)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
-% annotation('textbox',[0.220 .28 0.22 .28],'String','(d)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
 annotation('textbox',[0.005 .50 0.01 .51],'String','(a)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
 annotation('textbox',[0.215 .50 0.22 .51],'String','(b)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
 annotation('textbox',[0.440 .50 0.45 .51],'String','(c)','FontSize',8,'EdgeColor','none','HorizontalAlignment','center');
@@ -326,11 +322,13 @@ annotation('textbox',[0.440 .25 0.45 .26],'String','(f)','FontSize',8,'EdgeColor
 
 %% Figure 2: Comparison of consolidated layer thickness evolution from EMI, model, and IMBs
 % Ridge EMI data from Polona, Alli's Ridge, transect A1
-clear; clc;
+clc; clear; close all
+load('Coring_AR.mat',"Lsi","k_si_bulk_int","rho_bulk_int");
 load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
 load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
 t_sim = t_T66(270:1097); Tw_sim = Tw_mss(270:1097); Ta_sim = Ta_T66(270:1097);
 t_sim = t_sim(53:end); Tw_sim = Tw_sim(53:end); Ta_sim = Ta_sim(53:end); % only after first EM survey
+Lsi = Lsi(53:end); rho_bulk_int = rho_bulk_int(53:end); k_si_bulk_int = k_si_bulk_int(53:end); % only after first EM survey
 
 % import of EMI data
 project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA1_cc_consolidatedlayer.csv";
@@ -352,8 +350,8 @@ Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
 Hia = 21; % heat transfer coefficient (function of wind speed)
 hs = hs_int; % snow thickness
 ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
-ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
-% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+% ki = 2.2; rhoi = 917; Li = 333400; % fresh ice parameters
+Li = 333400; rhoi = rho_bulk_int; ki = k_si_bulk_int; % saline ice parameters
 dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
 td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
 % fresh ice model
@@ -361,15 +359,15 @@ dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); d
 for j = 1:length(x)
     dc(1) = dc_0(j);
     for i = 1:n-1
-        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki(i);
         Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
-        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        ddc(i) = -ki(i)./rhoi(i)./(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
         dc(i+1) = dc(i) + ddc(i);
     end
-    % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
     dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
     dc_em(:,j) = dc(:);
 end
+dc_em_si = dc_em.*(Li./Lsi-Li/Lsi(1)+1); % correction for CL microporosity
 
 c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
 for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
@@ -382,11 +380,12 @@ for i = 1:length(t)
 end
 for i = 1:length(t_sim)
     di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+    dsi_mdl_avg(i) = mean(dc_em_si(i,:)); dsi_mdl_std(i) = std(dc_em_si(i,:));
 end
-p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+p = fill([t_sim; flipud(t_sim)],[dsi_mdl_avg+dsi_mdl_std fliplr(dsi_mdl_avg-dsi_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
 errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
 p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
-plot(t_sim,di_mdl_avg,'color',c{1});
+plot(t_sim,dsi_mdl_avg,'color',c{1});
 
 % IMB data
 load('T61.mat',"t_T61"); load('DTC26.mat',"t_DTC26");
@@ -396,10 +395,10 @@ hc_T_int = interp1(datenum(t_T61(t_hc)),hc_T,datenum(t_T61),'linear'); % consoli
 t_hc_DTC =  [  1  15  30  60 160 200 240 300 330 375 440 500 550 600 630 656];
 hc_DTC =   -[210 210 210 210 214 222 224 238 238 242 238 256 242 238 224 214]/100;
 hc_DTC_int = interp1(datenum(t_DTC26(t_hc_DTC)),hc_DTC,datenum(t_DTC26),'linear','extrap'); % consolidated layer depth, DTC
-plot(t_T61,-hc_T_int,'--','linewidth',0.5,'color',c{3}); % observations, T61
+plot(t_T61,-hc_T_int,'--','linewidth',0.5,'color',c{3}); hold on % observations, T61
 plot(t_DTC26(4:end),-hc_DTC_int(4:end),'-','linewidth',0.5,'color',c{3}); % observations, DTC
 
-hYLabel = ylabel('Thickness of consolidated layer (m)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); ylim([1 5]);
+hYLabel = ylabel('Consolidated layer thickness(m)'); set([hYLabel gca],'FontSize',8,'FontWeight','normal'); ylim([0.5 5.5]);
 title('A1','FontSize',8,'FontWeight','normal');
 t_start = datetime('01-Jan-2020'); t_end = datetime('01-Aug-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
 % leg = legend('','EMI','','Model','IMB','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','southeast'); leg.ItemTokenSize = [30*0.66,18*0.66];
@@ -431,10 +430,12 @@ t_start = datetime('01-Jan-2020'); t_end = datetime('01-Aug-2020'); xlim([t_star
 
 % Ridge EMI data from Polona, Alli's Ridge, transect A2
 clear; clc; 
+load('Coring_AR.mat',"Lsi","k_si_bulk_int","rho_bulk_int");
 load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
 load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
 t_sim = t_T66(270:1097); Tw_sim = Tw_mss(270:1097); Ta_sim = Ta_T66(270:1097);
 t_sim = t_sim(155:end); Tw_sim = Tw_sim(155:end); Ta_sim = Ta_sim(155:end); % only after first EM survey
+Lsi = Lsi(155:end); rho_bulk_int = rho_bulk_int(155:end); k_si_bulk_int = k_si_bulk_int(155:end); % only after first EM survey
 
 % import of EMI data
 project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA2_cc_consolidatedlayer.csv";
@@ -457,8 +458,7 @@ Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
 Hia = 21; % heat transfer coefficient (function of wind speed)
 hs = hs_int; % snow thickness
 ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
-ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
-% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+Li = 333400; rhoi = rho_bulk_int; ki = k_si_bulk_int; % saline ice parameters
 dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
 td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
 % fresh ice model
@@ -466,15 +466,16 @@ dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); d
 for j = 1:length(x)
     dc(1) = dc_0(j);
     for i = 1:n-1
-        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki(i);
         Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
-        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        ddc(i) = -ki(i)./rhoi(i)./(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
         dc(i+1) = dc(i) + ddc(i);
     end
     % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
     dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
     dc_em(:,j) = dc(:);
 end
+dc_em_si = dc_em.*(Li./Lsi-Li/Lsi(1)+1); % correction for CL microporosity
 for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
 c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
 
@@ -506,22 +507,25 @@ for i = 1:length(t)
 end
 for i = 1:length(t_sim)
     di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+    dsi_mdl_avg(i) = mean(dc_em_si(i,:)); dsi_mdl_std(i) = std(dc_em_si(i,:));
 end
-p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+p = fill([t_sim; flipud(t_sim)],[dsi_mdl_avg+dsi_mdl_std fliplr(dsi_mdl_avg-dsi_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
 errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
 p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
-plot(t_sim,di_mdl_avg,'color',c{1});
-set(gca,'FontSize',8,'FontWeight','normal'); ylim([1 5]);
+plot(t_sim,dsi_mdl_avg,'color',c{1});
+set(gca,'FontSize',8,'FontWeight','normal'); ylim([0.5 5.5]);
 title('A2','FontSize',8,'FontWeight','normal');
 t_start = datetime('01-Jan-2020'); t_end = datetime('01-Aug-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
 % leg = legend('','EMI','','Model','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','northeast'); leg.ItemTokenSize = [30*0.66,18*0.66];
 
 % Ridge EMI data from Polona, Alli's Ridge, transect A3
 clear; clc;
+load('Coring_AR.mat',"Lsi","k_si_bulk_int","rho_bulk_int");
 load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
 load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
 t_sim = t_T66(270:1097); Tw_sim = Tw_mss(270:1097); Ta_sim = Ta_T66(270:1097);
 t_sim = t_sim(155:end); Tw_sim = Tw_sim(155:end); Ta_sim = Ta_sim(155:end); % only after first EM survey
+Lsi = Lsi(155:end); rho_bulk_int = rho_bulk_int(155:end); k_si_bulk_int = k_si_bulk_int(155:end); % only after first EM survey
 
 % import of EMI data
 project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeA3_cc_consolidatedlayer.csv";
@@ -534,7 +538,6 @@ project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input
 T = readtable(project); A = table2array(T); k = A(2:size(A,1),2:end); clearvars project T A
 
 for i = 1:length(x)
-    % hs_int(:,i) = interp1([datenum(t_sim(1)); datenum(t); datenum(t_sim(end))],[0; sn(:,i); 0],datenum(t_sim),'linear');
     hs_int(:,i) = interp1([datenum(t); datenum(t_sim(end))],[sn(:,i); 0],datenum(t_sim),'linear');
 end
 
@@ -544,8 +547,7 @@ Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
 Hia = 21; % heat transfer coefficient (function of wind speed)
 hs = hs_int; % snow thickness
 ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
-ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
-% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+Li = 333400; rhoi = rho_bulk_int; ki = k_si_bulk_int; % saline ice parameters
 dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
 td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
 % fresh ice model
@@ -553,15 +555,16 @@ dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); d
 for j = 1:length(x)
     dc(1) = dc_0(j);
     for i = 1:n-1
-        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki(i);
         Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
-        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        ddc(i) = -ki(i)./rhoi(i)./(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
         dc(i+1) = dc(i) + ddc(i);
     end
     % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
     dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
     dc_em(:,j) = dc(:);
 end
+dc_em_si = dc_em.*(Li./Lsi-Li/Lsi(1)+1); % correction for CL microporosity
 c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
 for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
 
@@ -571,17 +574,17 @@ for i = 1:length(t)
 end
 for i = 1:length(t_sim)
     di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+    dsi_mdl_avg(i) = mean(dc_em_si(i,:)); dsi_mdl_std(i) = std(dc_em_si(i,:));
 end
-p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+p = fill([t_sim; flipud(t_sim)],[dsi_mdl_avg+dsi_mdl_std fliplr(dsi_mdl_avg-dsi_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+plot(t_sim,dsi_mdl_avg,'color',c{1});
 errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
 p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
-plot(t_sim,di_mdl_avg,'color',c{1});
 plot(t_sim(1),di_mdl_avg(1)*0,'--','color',c{3});
-set(gca,'FontSize',8,'FontWeight','normal'); ylim([1 5]);
+set(gca,'FontSize',8,'FontWeight','normal'); ylim([0.5 5.5]);
 title('A3','FontSize',8,'FontWeight','normal');
 t_start = datetime('01-Jan-2020'); t_end = datetime('01-Aug-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
-% leg = legend('','EMI','','Model','box','off','NumColumns',1); set(leg,'FontSize',7,'Location','northeast'); leg.ItemTokenSize = [30*0.66,18*0.66];
-leg = legend('','EMI','','Model','IMB','box','off','NumColumns',3); set(leg,'FontSize',7,'Location','southoutside'); leg.ItemTokenSize = [30*0.66,18*0.66];
+leg = legend('','Model','EMI','','IMB','box','off','NumColumns',3); set(leg,'FontSize',7,'Location','southoutside'); leg.ItemTokenSize = [30*0.66,18*0.66];
 
 % nexttile
 % for i = 2:length(t)
@@ -609,9 +612,11 @@ leg = legend('','EMI','','Model','IMB','box','off','NumColumns',3); set(leg,'Fon
 
 % Ridge EMI data from Polona, Fort Ridge, transect 1
 clear; clc;
+load('Coring_AR.mat',"Lsi","k_si_bulk_int","rho_bulk_int");
 load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
 load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
 t_sim = t_T66(286:1097); Tw_sim = Tw_mss(286:1097); Ta_sim = Ta_T66(286:1097); % only after first EM survey
+Lsi = Lsi(17:end); rho_bulk_int = rho_bulk_int(17:end); k_si_bulk_int = k_si_bulk_int(17:end); % only after first EM survey
 
 % import of EMI data
 project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR1_cc_consolidatedlayer.csv";
@@ -633,8 +638,7 @@ Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
 Hia = 21; % heat transfer coefficient (function of wind speed)
 hs = hs_int; % snow thickness
 ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
-ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
-% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+Li = 333400; rhoi = rho_bulk_int; ki = k_si_bulk_int; % saline ice parameters
 dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
 td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
 % fresh ice model
@@ -642,15 +646,16 @@ dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); d
 for j = 1:length(x)
     dc(1) = dc_0(j);
     for i = 1:n-1
-        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki(i);
         Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
-        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        ddc(i) = -ki(i)./rhoi(i)./(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
         dc(i+1) = dc(i) + ddc(i);
     end
     % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
     dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
     dc_em(:,j) = dc(:);
 end
+dc_em_si = dc_em.*(Li./Lsi-Li/Lsi(1)+1); % correction for CL microporosity
 for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
 c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
 
@@ -660,11 +665,12 @@ for i = 1:length(t)
 end
 for i = 1:length(t_sim)
     di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+    dsi_mdl_avg(i) = mean(dc_em_si(i,:)); dsi_mdl_std(i) = std(dc_em_si(i,:));
 end
-p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+p = fill([t_sim; flipud(t_sim)],[dsi_mdl_avg+dsi_mdl_std fliplr(dsi_mdl_avg-dsi_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
 errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
-p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
-plot(t_sim,di_mdl_avg,'color',c{1});
+p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color')); hold on
+plot(t_sim,dsi_mdl_avg,'color',c{1});
 
 load('DTC_data.mat',"t_DTC","fb_DTC","hs_DTC","hi_DTC"); load('T60.mat',"t_T60");
 t_hc =  [  1   9  50 100 150 200 250 275 285 290 310 315 325 350 375 395 405 410 420];
@@ -703,9 +709,11 @@ t_start = datetime('01-Jan-2020'); t_end = datetime('01-Apr-2020'); xlim([t_star
 
 % Ridge EMI data from Polona, Fort Ridge, transect 2
 clear; clc;
+load('Coring_AR.mat',"Lsi","k_si_bulk_int","rho_bulk_int");
 load('PS_meteo.mat',"Tw_mss","Ta_T66"); % data, meteo, doi:10.18739/A2FF3M18K
 load('T66.mat',"t_T66"); t_T66 = t_T66(1:1097);
 t_sim = t_T66(294:1097); Tw_sim = Tw_mss(294:1097); Ta_sim = Ta_T66(294:1097); % only after first EM survey
+Lsi = Lsi(25:end); rho_bulk_int = rho_bulk_int(25:end); k_si_bulk_int = k_si_bulk_int(25:end); % only after first EM survey
 
 % import of EMI data
 project = "C:\Users\evgenii.salganik\Documents\MATLAB\datasets\ridge_model_input_EM\ridgeFR2_cc_consolidatedlayer.csv";
@@ -727,8 +735,8 @@ Ta = Ta_sim; Tf = Tw_sim; % air and water temperatures
 Hia = 21; % heat transfer coefficient (function of wind speed)
 hs = hs_int; % snow thickness
 ks = 0.26; % snow thermal conductivity, Macfarlane et al., doi:10.5194/tc-17-5417-2023
-ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
-% dc_0 = max(fb,0.01); % initial ice thickness = initial ice freeboard from EMI
+% ki = 2.2; rhoi = 917; Li = 333400; % fresh ice thermodynamic parameters
+Li = 333400; rhoi = rho_bulk_int; ki = k_si_bulk_int; % saline ice parameters
 dc_0 = cl(1,:); % initial ice thickness = initial CL thickness from EMI
 td = datenum(t_sim)-datenum(t_sim(1)); t_sec = (td)*24*3600; % time
 % fresh ice model
@@ -736,15 +744,15 @@ dt = diff(t_sec); n = length(t_sec); [dc,R1,R2,R3,ddc,Tsi] = deal(zeros(1,n)); d
 for j = 1:length(x)
     dc(1) = dc_0(j);
     for i = 1:n-1
-        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki;
+        R1(i) = 1./Hia; R2(i) = hs(i,j)/ks; R3(i) = dc(i)/ki(i);
         Tsi(i) = (Ta(i) - Tf(i))*R3(i)./(R1(i)+R2(i)+R3(i)) + Tf(i);
-        ddc(i) = -ki/rhoi/(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
+        ddc(i) = -ki(i)./rhoi(i)./(Li*por)*(Tsi(i) - Tf(i))/dc(i)*dt(i);
         dc(i+1) = dc(i) + ddc(i);
     end
-    % dc = dc - dc_0(j); % CL thickness = ice thickness - initial freeboard
     dc = dc - fb(j); % CL thickness = ice thickness - initial freeboard
     dc_em(:,j) = dc(:);
 end
+dc_em_si = dc_em.*(Li./Lsi-Li/Lsi(1)+1); % correction for CL microporosity
 for i = 1:length(t); [~,t_em(i)] = min(abs(datenum(t_sim)-datenum(t(i)))); end
 c{1} = [0.0000 0.4470 0.7410]; c{2} = [0.8500 0.3250 0.0980]; c{3} = [0.9290 0.6940 0.1250]; c{4} = [0.4940 0.1840 0.5560];	c{5} = [0.4660 0.6740 0.1880]; c{6} = [0.3010 0.7450 0.9330]; c{7} = [0.6350 0.0780 0.1840]; % colors
 
@@ -754,11 +762,12 @@ for i = 1:length(t)
 end
 for i = 1:length(t_sim)
     di_mdl_avg(i) = mean(dc_em(i,:)); di_mdl_std(i) = std(dc_em(i,:));
+    dsi_mdl_avg(i) = mean(dc_em_si(i,:)); dsi_mdl_std(i) = std(dc_em_si(i,:));
 end
-p = fill([t_sim; flipud(t_sim)],[di_mdl_avg+di_mdl_std fliplr(di_mdl_avg-di_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
+p = fill([t_sim; flipud(t_sim)],[dsi_mdl_avg+dsi_mdl_std fliplr(dsi_mdl_avg-dsi_mdl_std)],1,'FaceColor',c{1},'edgecolor','none'); set(p,'facealpha',0.1); hold on
 errorbar(t,di_em_avg,di_em_std,'color',c{4}); hold on
 p = plot(t,di_em_avg,'o','color',c{4}); p.MarkerSize = 3; set(p,'markerfacecolor',get(p,'color'));
-plot(t_sim,di_mdl_avg,'color',c{1});
+plot(t_sim,dsi_mdl_avg,'color',c{1});
 set(gca,'FontSize',8,'FontWeight','normal'); ylim([0.5 4.0]);
 title('FR2','FontSize',8,'FontWeight','normal');
 t_start = datetime('01-Jan-2020'); t_end = datetime('01-Apr-2020'); xlim([t_start t_end]); datetick('x','mmm','keeplimits'); xtickangle(0); set(gca,'YDir','reverse');
